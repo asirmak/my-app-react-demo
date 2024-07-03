@@ -2,15 +2,14 @@ import React, { useState, useEffect } from "react";
 import Post from "../Post/Post.js";
 import CssBaseline from '@mui/material/CssBaseline';
 import Box from '@mui/material/Box';
-import Container from '@mui/material/Container';
-import "./Home.scss";
+import PostForm from "../Post/PostForm.js";
 
 function Home() {
     const [error, setError] = useState(null);
     const [isLoaded, setIsLoaded] = useState(false);
     const [postList, setPostList] = useState([]);
 
-    useEffect(() => {
+    const refreshPosts = () => {
         fetch("/posts")
             .then(res => res.json())
             .then(
@@ -22,8 +21,12 @@ function Home() {
                     setIsLoaded(true);
                     setError(error);
                 }
-            );
-    }, []);
+        );
+    }
+
+    useEffect(() => {
+        refreshPosts();
+    }, [postList]);
 
     if (error) {
         return <div>Error !!!</div>;
@@ -33,13 +36,13 @@ function Home() {
         return (
             <React.Fragment>
                 <CssBaseline />
-                <Container fixed>
-                    <Box sx={{ bgcolor: '#cfe8fc', height: '100vh', display:"flex", flexWrap:"wrap", justifyContent: "center", alignItems:"center" }} >
+                    <Box sx={{ bgcolor: '#f0f5ff', display: "flex", flexDirection: "column", alignItems: "center"}}>
+                        <PostForm userId = {1} userName={"deneme"} refreshPosts={refreshPosts} />
                         {postList.map(post => (
-                            <Post userId = {post.userId} userName={post.userName} title={post.title} text={post.text} />
+                            <Post likes = {post.postLike} userId = {post.userId} userName={post.userName} 
+                            title={post.title} text={post.text} postId={post.id}/>
                         ))}
                     </Box>
-                </Container>
             </React.Fragment>
         );
     }
