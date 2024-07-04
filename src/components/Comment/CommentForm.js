@@ -23,9 +23,10 @@ function CommentForm(props) {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
+                "Authorization": localStorage.getItem("tokenKey"),
             },
             body: JSON.stringify({
-                userId: userId,
+                userId: localStorage.getItem("currentUser"),
                 postId: postId,
                 text: text,
             }),

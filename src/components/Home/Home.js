@@ -37,10 +37,11 @@ function Home() {
             <React.Fragment>
                 <CssBaseline />
                     <Box sx={{ bgcolor: '#f0f5ff', display: "flex", flexDirection: "column", alignItems: "center"}}>
-                        <PostForm userId = {1} userName={"deneme"} refreshPosts={refreshPosts} />
+                        {localStorage.getItem("currentUser") === null? "":
+                        <PostForm userId = {localStorage.getItem("currentUser")} userName={localStorage.getItem("userName")} refreshPosts={refreshPosts} />}
                         {postList.map(post => (
                             <Post likes = {post.postLike} userId = {post.userId} userName={post.userName} 
-                            title={post.title} text={post.text} postId={post.id}/>
+                            title={post.title} text={post.text} postId={post.id}></Post>
                         ))}
                     </Box>
             </React.Fragment>

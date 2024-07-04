@@ -6,9 +6,20 @@ import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
 import MenuIcon from '@mui/icons-material/Menu';
+import { useNavigate } from "react-router-dom";
+import LockOpenIcon from '@mui/icons-material/LockOpen';
 
 function NavBar() {
-    let userId = 5;
+
+    let navigate = useNavigate();
+
+    const onClick = () => {
+        localStorage.removeItem("tokenKey");
+        localStorage.removeItem("currentUser");
+        localStorage.removeItem("username");
+        navigate(0)
+    }
+
     return (
         <div>
             <Box sx={{ flexGrow: 1 }}>
@@ -29,9 +40,17 @@ function NavBar() {
                             </Link>
                         </Typography>
                         <Box sx={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', width: '100%' }}>
-                            <Link to={{ pathname: '/users/' + userId }} style={{ color: 'white', textDecoration: 'none', boxShadow: 'none' }}>
-                                User
-                            </Link>
+                            {localStorage.getItem("currentUser") === null ? <Link to="/auth" style={{ color: 'white', textDecoration: 'none', boxShadow: 'none' }}>Login/Register</Link> :
+                            <div>
+                                <IconButton 
+                                            style={{ color: 'white', textDecoration: 'none', boxShadow: 'none' }} 
+                                            onClick={onClick}> 
+                                            <LockOpenIcon></LockOpenIcon>
+                                </IconButton>
+                                    <Link to={{ pathname: '/users/' + localStorage.getItem("currentUser") }} style={{ color: 'white', textDecoration: 'none', boxShadow: 'none' }}>
+                                        Profile
+                                    </Link>
+                            </div>}
                         </Box>
                     </Toolbar>
                 </AppBar>
