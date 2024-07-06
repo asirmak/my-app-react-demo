@@ -9,6 +9,7 @@ import { Button, InputAdornment, OutlinedInput } from '@mui/material';
 import { useState } from 'react';
 import Snackbar from '@mui/material/Snackbar';
 import Alert from '@mui/material/Alert';
+import { PostWithAuth } from '../../services/HttpService';
 
 function PostForm(props) {
   const {userId, userName, refreshPosts} = props;
@@ -24,20 +25,13 @@ function PostForm(props) {
   };
 
   const savePost = () => {
-    fetch("/posts",{
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": localStorage.getItem("tokenKey"),
-        },
-        body: JSON.stringify({
-            title: title,
-            userId: localStorage.getItem("currentUser"),
-            text: text,
-        }),
+    PostWithAuth("/posts", {
+      title: title,
+      userId: localStorage.getItem("currentUser"),
+      text: text,
     })
-      .then((res) => res.json())
-      .catch((err) => console.log("error"))
+    .then((res) => res.json())
+    .catch((err) => console.log("error"))
   }
 
 
@@ -47,7 +41,7 @@ function PostForm(props) {
       setIsSent(true);
       setTitle("");
       setText("");
-      refreshPosts();
+      refreshPosts(true);
     }
   }
 

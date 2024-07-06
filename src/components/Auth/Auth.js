@@ -18,7 +18,6 @@ function Auth() {
     const handleButton = (path) => {
         sendRequest(path);
     }
-
     const sendRequest = (path) => {
         fetch("/auth/" + path, {
             method: "POST",

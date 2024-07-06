@@ -2,25 +2,19 @@ import React, { useState, useEffect } from "react";
 import AvatarUser from "../Avatar/AvatarUser";
 import UserActivity from "./UserActivity";
 import { useParams } from "react-router-dom";
+import { GetWithAuth } from "../../services/HttpService";
 
 
 function User() {
 
     const {userId} = useParams();
     const [user, setUser] = useState();
-
+    // eslint-disable-next-line
     const getUser = () => {
-        fetch("/users/"+userId, {
-            method: "GET",
-            headers: {
-                "Content-Type": "application/json",
-                "Authorization": localStorage.getItem("tokenKey"),
-            },
-        })
+        GetWithAuth("/users/"+userId)
         .then(res => res.json())
         .then(
             (result) => {
-                console.log(result)
                 setUser(result)
             },
             (error) => {
@@ -30,15 +24,15 @@ function User() {
     
     
     };
-
     useEffect(() => {
         getUser();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     return(
         <div style={ {display:"flex"} }>
-            {user? <AvatarUser avatarId={user.avatarId}/> : "" }
-            <UserActivity userId = {userId}/>
+            {user? <AvatarUser avatarId={user.avatarId} userId={userId} userName={user.userName}/> : "" }
+            {userId === localStorage.getItem("currentUser") ? <UserActivity userId = {userId}/> : ""}
         </div>
     )
 }

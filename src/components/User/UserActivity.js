@@ -16,6 +16,7 @@ import Typography from '@mui/material/Typography';
 import CloseIcon from '@mui/icons-material/Close';
 import Slide from '@mui/material/Slide';
 import Post from '../Post/Post';
+import { GetWithAuth } from '../../services/HttpService';
 
 const columns = [
   {
@@ -34,15 +35,9 @@ function DialogScreen(props) {
     const {isOpen, postId, setIsOpen} = props
     const [open, setOpen] = React.useState(false);
     const [post, setPost] = useState(null);
-
+    // eslint-disable-next-line
     const getPost = () => {
-        fetch("/posts/"+postId, {
-            method: "GET",
-            headers: {
-                "Content-Type": "application/json",
-                "Authorization": localStorage.getItem("tokenKey"),
-            },
-        })
+        GetWithAuth("/posts/"+postId)
         .then(res => res.json())
         .then(
             (result) => {
@@ -68,6 +63,7 @@ function DialogScreen(props) {
 
     useEffect(() => {
         getPost();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [postId]);
      
     return (
@@ -88,12 +84,6 @@ function DialogScreen(props) {
                 >
                   <CloseIcon />
                 </IconButton>
-                <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">
-                  Sound
-                </Typography>
-                <Button autoFocus color="inherit" onClick={handleClose}>
-                  save
-                </Button>
               </Toolbar>
             </AppBar>
             <Post 
@@ -129,15 +119,8 @@ function UserActivity(props) {
     setSelectedPost(postId);
     setIsOpen(true)
   }
-
   const getActivity = () => {
-      fetch("/users/activity/"+userId, {
-          method: "GET",
-          headers: {
-              "Content-Type": "application/json",
-              "Authorization": localStorage.getItem("tokenKey"),
-          },
-      })
+    GetWithAuth("/users/activity/"+userId)
       .then(res => res.json())
       .then(
           (result) => {
@@ -147,13 +130,11 @@ function UserActivity(props) {
           (error) => {
               console.log(error)
           }
-      )
-  
-  
+      )  
   };
-
   useEffect(() => {
     getActivity();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (

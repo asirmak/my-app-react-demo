@@ -5,9 +5,10 @@ import Avatar from '@mui/material/Avatar';
 import { useState } from "react";
 import Snackbar from '@mui/material/Snackbar';
 import Alert from '@mui/material/Alert';
+import { PostWithAuth } from "../../services/HttpService";
 
 function CommentForm(props) {
-    const {userId, userName, postId, refreshComment} = props;
+    const {userId, userName, postId, setRefresh} = props;
     const [text, setText] = useState("");
     const [isSent, setIsSent] = useState(false);
 
@@ -19,20 +20,13 @@ function CommentForm(props) {
       };
 
     const saveComment = () => {
-        fetch("/comments",{
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "Authorization": localStorage.getItem("tokenKey"),
-            },
-            body: JSON.stringify({
-                userId: localStorage.getItem("currentUser"),
-                postId: postId,
-                text: text,
-            }),
+        PostWithAuth("/comments", {
+            userId: localStorage.getItem("currentUser"),
+            postId: postId,
+            text: text,
         })
-            .then((res) => res.json())
-            .catch((err) => console.log("error"))
+        .then((res) => res.json())
+        .catch((err) => console.log("error"))
     }
 
     const handleSubmit = () => {
@@ -40,7 +34,7 @@ function CommentForm(props) {
             saveComment();
             setIsSent(true);
             setText("");
-            refreshComment();
+            setRefresh(true);
         }
     }
 

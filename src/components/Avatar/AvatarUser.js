@@ -14,9 +14,10 @@ import ListItemText from '@mui/material/ListItemText';
 import ListItemAvatar from '@mui/material/ListItemAvatar';
 import Checkbox from '@mui/material/Checkbox';
 import Avatar from '@mui/material/Avatar';
+import { PutWithAuth } from "../../services/HttpService";
 
 function AvatarUser(props) {
-    const {avatarId} = props
+    const {avatarId, userId, userName} = props
     const [open, setOpen] = useState(false);
     const [selectedAvatar, setSelectedAvatar] = useState(avatarId);
 
@@ -31,18 +32,11 @@ function AvatarUser(props) {
     };
 
     const saveAvatar = () => {
-        fetch("/users/"+localStorage.getItem("currentUser"), {
-            method: "PUT",
-            headers: {
-              "Content-Type": "application/json",
-              "Authorization": localStorage.getItem("tokenKey"),
-            },
-            body: JSON.stringify({
-                avatar: selectedAvatar,
-            }),
+        PutWithAuth("/users/"+localStorage.getItem("currentUser"), {
+            avatar: selectedAvatar,
         })
-          .then((res) => res.json())
-          .catch((err) => console.log("error"))
+        .then((res) => res.json())
+        .catch((err) => console.log("error"))
       }
 
 
@@ -67,12 +61,13 @@ function AvatarUser(props) {
             />
             <CardContent>
                 <Typography gutterBottom variant="h5" component="div">
-                    Username
+                    {userName}
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
                     User information
                 </Typography>
             </CardContent>
+            {userId === localStorage.getItem("currentUser") ?
             <CardActions>
                 <Button size="small" onClick={handleOpen}>Change Avatar</Button>
                 <Modal
@@ -112,7 +107,7 @@ function AvatarUser(props) {
                         </List>
                     </Box>
                 </Modal>
-            </CardActions>
+            </CardActions> : ""}
         </Card>
     );
 }

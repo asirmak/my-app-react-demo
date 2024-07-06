@@ -8,6 +8,7 @@ function Home() {
     const [error, setError] = useState(null);
     const [isLoaded, setIsLoaded] = useState(false);
     const [postList, setPostList] = useState([]);
+    const [refreshPost, setRefreshPost] = useState(false)
 
     const refreshPosts = () => {
         fetch("/posts")
@@ -22,11 +23,12 @@ function Home() {
                     setError(error);
                 }
         );
+        setRefreshPost(false)
     }
 
     useEffect(() => {
         refreshPosts();
-    }, [postList]);
+    }, [refreshPost]);
 
     if (error) {
         return <div>Error !!!</div>;
@@ -34,11 +36,11 @@ function Home() {
         return <div>Loading...</div>;
     } else {
         return (
-            <React.Fragment>
+            <React.Fragment >
                 <CssBaseline />
                     <Box sx={{ bgcolor: '#f0f5ff', display: "flex", flexDirection: "column", alignItems: "center"}}>
                         {localStorage.getItem("currentUser") === null? "":
-                        <PostForm userId = {localStorage.getItem("currentUser")} userName={localStorage.getItem("userName")} refreshPosts={refreshPosts} />}
+                        <PostForm userId = {localStorage.getItem("currentUser")} userName={localStorage.getItem("userName")} refreshPosts={setRefreshPost} />}
                         {postList.map(post => (
                             <Post likes = {post.postLike} userId = {post.userId} userName={post.userName} 
                             title={post.title} text={post.text} postId={post.id}></Post>
