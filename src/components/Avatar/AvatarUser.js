@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Card from '@mui/material/Card';
 import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
@@ -14,13 +14,23 @@ import ListItemText from '@mui/material/ListItemText';
 import ListItemAvatar from '@mui/material/ListItemAvatar';
 import Checkbox from '@mui/material/Checkbox';
 import Avatar from '@mui/material/Avatar';
-import { PutWithAuth } from "../../services/HttpService";
+import { useNavigate } from "react-router-dom";
+import { PutWithAuth, RefreshToken } from "../../services/HttpService";
 
 function AvatarUser(props) {
     const {avatarId, userId, userName} = props
     const [open, setOpen] = useState(false);
     const [selectedAvatar, setSelectedAvatar] = useState(avatarId);
+    let navigate = useNavigate();
 
+    const logout = () => {
+        localStorage.removeItem("tokenKey");
+        localStorage.removeItem("currentUser");
+        localStorage.removeItem("username");
+        localStorage.removeItem("refreshKey")
+        navigate(0)
+    }
+    
     const handleClose = () => {
         setOpen(false);
         saveAvatar();
@@ -35,12 +45,38 @@ function AvatarUser(props) {
         PutWithAuth("/users/"+localStorage.getItem("currentUser"), {
             avatar: selectedAvatar,
         })
-        .then((res) => res.json())
-        .catch((err) => console.log("error"))
+        .then((res) => {
+            if(!res.ok){
+                RefreshToken()
+                .then((res) => {
+                    if(!res.ok){
+                        logout();
+                    } else{
+                        return res.json();
+                    }    
+                })
+                .then((result) => {
+                    console.log(result)
+                    if (result !== undefined){
+                        localStorage.setItem("tokenKey", result.accessToken);
+                        saveAvatar();
+                    }
+                })
+                .catch((err) => {
+                    console.log(err)
+                });
+            }
+            else {
+                res.json()
+            } 
+        })
+        .catch((err) => console.log(err))
       }
-
-
-
+    
+    useEffect(() => {
+        setSelectedAvatar(avatarId);
+    }, [avatarId]);
+    
     const style = {
         position: 'absolute',
         top: '50%',
@@ -67,7 +103,7 @@ function AvatarUser(props) {
                     User information
                 </Typography>
             </CardContent>
-            {userId === localStorage.getItem("currentUser") ?
+            {userId === +localStorage.getItem("currentUser") ?
             <CardActions>
                 <Button size="small" onClick={handleOpen}>Change Avatar</Button>
                 <Modal
@@ -89,6 +125,7 @@ function AvatarUser(props) {
                                         <ListItemButton>
                                             <ListItemAvatar >
                                                 <Avatar
+                                                    key={`avatar-${value}`}
                                                     alt={`Avatar n°${value + 1}`}
                                                     src={`/avatars/avatar${value}.png`}
                                                 />

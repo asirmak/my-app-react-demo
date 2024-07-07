@@ -17,6 +17,7 @@ function NavBar() {
         localStorage.removeItem("tokenKey");
         localStorage.removeItem("currentUser");
         localStorage.removeItem("username");
+        localStorage.removeItem("refreshKey")
         navigate(0)
     }
 

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Card from '@mui/material/Card';
 import CardHeader from '@mui/material/CardHeader';
 import CardContent from '@mui/material/CardContent';
@@ -8,13 +8,23 @@ import { Button, InputAdornment, OutlinedInput } from '@mui/material';
 import { useState } from 'react';
 import Snackbar from '@mui/material/Snackbar';
 import Alert from '@mui/material/Alert';
-import { PostWithAuth } from '../../services/HttpService';
+import { PostWithAuth, RefreshToken } from '../../services/HttpService';
 
 function PostForm(props) {
   const {userId, userName, refreshPosts} = props;
   const [text, setText] = useState("");
   const [title, setTitle] = useState("");
   const [isSent, setIsSent] = useState(false);
+
+  let navigate = useNavigate();
+
+  const logout = () => {
+      localStorage.removeItem("tokenKey");
+      localStorage.removeItem("currentUser");
+      localStorage.removeItem("username");
+      localStorage.removeItem("refreshKey")
+      navigate(0)
+  }
 
   const handleClose = (event, reason) => {
     if (reason === 'clickaway') {
@@ -29,8 +39,32 @@ function PostForm(props) {
       userId: localStorage.getItem("currentUser"),
       text: text,
     })
-    .then((res) => res.json())
-    .catch((err) => console.log("error"))
+    .then((res) => {
+      if(!res.ok){
+        RefreshToken()
+        .then((res) => {
+          if(!res.ok){
+            logout();
+          } else{
+            return res.json();
+          }
+        })
+        .then((result) => {
+          if(result !== undefined){
+            localStorage.setItem("tokenKey", result.accessToken);
+            savePost();
+            refreshPosts(true);
+          }
+        })
+        .catch((err) => {
+          console.log(err)
+        })
+      }
+      else{
+        res.json()
+      }  
+    })
+    .catch((err) => console.log(err))
   }
 
 

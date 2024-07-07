@@ -33,9 +33,12 @@ function Auth() {
         .then((res) => res.json())
         .then((result) => {
             if(path === "login"){
-                localStorage.setItem("tokenKey", result.message);
+                localStorage.setItem("tokenKey", result.accessToken);
+                localStorage.setItem("refreshKey", result.refreshToken);
                 localStorage.setItem("currentUser", result.userId);
                 localStorage.setItem("userName", username);
+                console.log(localStorage.getItem("refreshKey"))
+
             }
             setUsername(""); // Clear username state
             setPassword(""); // Clear password state

@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useRef} from 'react';
-import { Link } from "react-router-dom";
+import React, { useState, useEffect } from 'react';
+import { Link, useNavigate } from "react-router-dom";
 import { styled } from '@mui/material/styles';
 import Card from '@mui/material/Card';
 import CardHeader from '@mui/material/CardHeader';
@@ -14,7 +14,7 @@ import CommentIcon from '@mui/icons-material/Comment';
 import { Container } from '@mui/material';
 import Comment from '../Comment/Comment';
 import CommentForm from '../Comment/CommentForm';
-import { DeleteWithAuth, PostWithAuth } from '../../services/HttpService';
+import { DeleteWithAuth, PostWithAuth, RefreshToken } from '../../services/HttpService';
 
 const ExpandMore = styled((props) => {
   const { expand, ...other } = props;
@@ -27,19 +27,116 @@ const ExpandMore = styled((props) => {
 }));
 
 function Post(props) {
-  const {likes, title, text, userId, userName, postId} = props;
+  const { initialLikes, title, text, userId, userName, postId } = props;
   const [expanded, setExpanded] = useState(false);
   const [error, setError] = useState(null);
   const [isLoaded, setIsLoaded] = useState(false);
   const [commentList, setCommentList] = useState([]);
   const [isLiked, setIsLiked] = useState(false);
+  const [likes, setLikes] = useState(initialLikes);
   const [likeCount, setLikeCount] = useState(likes.length);
   const [likeId, setLikeId] = useState(null);
   const [refresh, setRefresh] = useState(false);
-  const isInitialMount = useRef(true);
+  const [isInitialMount, setIsInitialMount] = useState(true);
 
-  let disabled = (localStorage.getItem("currentUser") == null ? true:false);
- 
+  let disabled = (localStorage.getItem("currentUser") == null ? true : false);
+
+  let navigate = useNavigate();
+
+  const logout = () => {
+      localStorage.removeItem("tokenKey");
+      localStorage.removeItem("currentUser");
+      localStorage.removeItem("username");
+      localStorage.removeItem("refreshKey")
+      navigate(0)
+  }
+  const addLike = () => {
+    const newLike = { userId: localStorage.getItem("currentUser"), postId: postId };
+    PostWithAuth("/likes", newLike)
+    .then((res) => {
+      if(!res.ok){
+        RefreshToken()
+        .then((res) => {if(!res.ok){
+                logout();
+            } else {
+                return res.json();
+            }    
+        })
+        .then((result) => {
+            if (result !== undefined){
+                localStorage.setItem("tokenKey", result.accessToken);
+                addLike();
+            }
+        })
+        .catch((err) => {
+          if (err.message !== "Unauthorized") {
+            console.log(err);
+          }
+        });
+    }
+    else {
+        return res.json()
+    } 
+    })
+    .then((data) => {
+      const likeData = { ...data, ...newLike };
+      setLikes([...likes, likeData]);
+      setLikeId(likeData.id);
+    })
+    .catch((err) => {
+      if (err.message !== "Unauthorized") {
+        console.log(err);
+      }
+    });
+  };
+
+  const deleteLike = () => {
+    DeleteWithAuth("/likes/" + likeId)
+    .then((res) => {
+      if (!res.ok){
+        RefreshToken()
+        .then((res) => {
+          if(!res.ok){
+            logout();
+          }
+          else{
+            return res.json();
+          }
+        })
+        .then((result) => {
+          if (result !== undefined){
+            localStorage.setItem("tokenKey", result.accessToken);
+            deleteLike();
+          }
+        })
+        .catch((err) => {
+          if (err.message !== "Unauthorized") {
+            console.log(err);
+          }
+        });
+      }
+      else{
+        setLikes(likes.filter((like) => like.id !== likeId));
+      }
+    })
+    .catch((err) => {
+      if (err.message !== "Unauthorized") {
+        console.log(err);
+      }
+    });
+  };
+
+  const handleLike = () => {
+    setIsLiked(!isLiked);
+    if (!isLiked) {
+      addLike();
+      setLikeCount(likeCount + 1);
+    } else {
+      deleteLike();
+      setLikeCount(likeCount - 1);
+    }
+  };
+
   const refreshComments = () => {
     fetch("/comments?postId=" + postId)
       .then(res => res.json())
@@ -54,42 +151,16 @@ function Post(props) {
         }
       );
 
-    setRefresh(false)
+    setRefresh(false);
   };
-  
-  const handleLike = () => {
-    setIsLiked(!isLiked);
-    if(!isLiked){
-      saveLike();
-      setLikeCount(likeCount + 1)
-    }
-    else{
-      deleteLike();
-      setLikeCount(likeCount - 1)
-    }
-      
-   }
-  const saveLike = () => {
-    PostWithAuth("/likes", {
-      postId: postId, 
-      userId : localStorage.getItem("currentUser"),
-    })
-    .then((res) => res.json())
-    .catch((err) => console.log(err))
-  }
-
-  const deleteLike = () => {
-    DeleteWithAuth("/likes/"+likeId)
-      .catch((err) => console.log(err))
-  }
 
   const checkLikes = () => {
-    var likeControl = likes.find((like => ""+like.userId === localStorage.getItem("currentUser")));
-    if(likeControl != null){
+    const likeControl = likes.find((like) => "" + like.userId === localStorage.getItem("currentUser"));
+    if (likeControl != null) {
       setLikeId(likeControl.id);
       setIsLiked(true);
     }
-  }
+  };
 
   const handleExpandClick = () => {
     setExpanded(!expanded);
@@ -99,16 +170,17 @@ function Post(props) {
   };
 
   useEffect(() => {
-    if(isInitialMount.current)
-      isInitialMount.current = false;
-    else {
+    if (isInitialMount)
+      setIsInitialMount(false)
+    else{
       refreshComments();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  },[refresh]);
-  useEffect(() => {checkLikes()
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-  },[])
+  }, [refresh]);
+
+  useEffect(() => { checkLikes(); 
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <Card sx={{ width: 800, textAlign: "left", margin: 3 }}>
@@ -128,21 +200,20 @@ function Post(props) {
         </Typography>
       </CardContent>
       <CardActions disableSpacing>
-        {disabled?
-        <IconButton
-          disabled
-          onClick={handleLike}
-          aria-label="add to favorites"
-        >
-          <FavoriteIcon style={isLiked ? { color: 'red' } : null} />
-        </IconButton> :
-        <IconButton
-        onClick={handleLike}
-        aria-label="add to favorites"
-        >
-        <FavoriteIcon style={isLiked ? { color: 'red' } : null} />
-        </IconButton>}
-
+        {disabled ?
+          <IconButton
+            disabled
+            onClick={handleLike}
+            aria-label="add to favorites"
+          >
+            <FavoriteIcon style={isLiked ? { color: 'red' } : null} />
+          </IconButton> :
+          <IconButton
+            onClick={handleLike}
+            aria-label="add to favorites"
+          >
+            <FavoriteIcon style={isLiked ? { color: 'red' } : null} />
+          </IconButton>}
         {likeCount}
         <ExpandMore
           expand={expanded}
@@ -159,14 +230,14 @@ function Post(props) {
             "Error"
           ) : isLoaded ? (
             commentList.map(comment => (
-              <Comment 
-              key={comment.id}
-              userId={comment.userId} userName={comment.userName} text={comment.text} />
+              <Comment
+                key={comment.id}
+                userId={comment.userId} userName={comment.userName} text={comment.text} />
             ))
           ) : (
             "Loading"
           )}
-          {disabled? "" : <CommentForm userId={localStorage.getItem("currentUser")} userName={localStorage.getItem("userName")} postId={postId} setRefresh={setRefresh} />}
+          {disabled ? "" : <CommentForm userId={localStorage.getItem("currentUser")} userName={localStorage.getItem("userName")} postId={postId} setRefresh={setRefresh} />}
         </Container>
       </Collapse>
     </Card>

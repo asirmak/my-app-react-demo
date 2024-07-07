@@ -1,16 +1,25 @@
 import { Button, CardContent, InputAdornment, OutlinedInput } from "@mui/material";
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Avatar from '@mui/material/Avatar';
 import { useState } from "react";
 import Snackbar from '@mui/material/Snackbar';
 import Alert from '@mui/material/Alert';
-import { PostWithAuth } from "../../services/HttpService";
+import { PostWithAuth, RefreshToken } from "../../services/HttpService";
 
 function CommentForm(props) {
     const {userId, userName, postId, setRefresh} = props;
     const [text, setText] = useState("");
     const [isSent, setIsSent] = useState(false);
+    let navigate = useNavigate();
+
+    const logout = () => {
+        localStorage.removeItem("tokenKey");
+        localStorage.removeItem("currentUser");
+        localStorage.removeItem("username");
+        localStorage.removeItem("refreshKey")
+        navigate(0)
+    }
 
     const handleClose = (event, reason) => {
         if (reason === 'clickaway') {
@@ -25,8 +34,33 @@ function CommentForm(props) {
             postId: postId,
             text: text,
         })
-        .then((res) => res.json())
-        .catch((err) => console.log("error"))
+        .then((res) => {
+            if(!res.ok){
+                RefreshToken()
+                .then((res) => {if(!res.ok){
+                        logout();
+                    } else {
+                        return res.json();
+                    }    
+                })
+                .then((result) => {
+                    if (result !== undefined){
+                        localStorage.setItem("tokenKey", result.accessToken);
+                        saveComment();
+                        setRefresh(true);
+                    }
+                })
+                .catch((err) => {
+                    console.log(err)
+                })
+            }
+            else {
+                res.json()
+            } 
+        })
+        .catch((err) => {
+            console.log(err)
+        })
     }
 
     const handleSubmit = () => {

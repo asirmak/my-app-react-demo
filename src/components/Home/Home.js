@@ -44,7 +44,7 @@ function Home() {
                         {postList.map(post => (
                             <Post
                             key={post.id} // Add the key prop here
-                            likes = {post.postLike} userId = {post.userId} userName={post.userName} 
+                            initialLikes = {post.postLike} userId = {post.userId} userName={post.userName} 
                             title={post.title} text={post.text} postId={post.id}></Post>
                         ))}
                     </Box>

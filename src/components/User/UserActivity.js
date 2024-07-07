@@ -7,7 +7,7 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import { Button } from '@mui/material';
-
+import { useNavigate } from "react-router-dom";
 import Dialog from '@mui/material/Dialog';
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
@@ -16,7 +16,7 @@ import Typography from '@mui/material/Typography';
 import CloseIcon from '@mui/icons-material/Close';
 import Slide from '@mui/material/Slide';
 import Post from '../Post/Post';
-import { GetWithAuth } from '../../services/HttpService';
+import { GetWithAuth, RefreshToken } from '../../services/HttpService';
 
 const columns = [
   {
@@ -35,20 +35,49 @@ function DialogScreen(props) {
     const {isOpen, postId, setIsOpen} = props
     const [open, setOpen] = React.useState(false);
     const [post, setPost] = useState(null);
-    // eslint-disable-next-line
+    let navigate = useNavigate();
+
+    const logout = () => {
+        localStorage.removeItem("tokenKey");
+        localStorage.removeItem("currentUser");
+        localStorage.removeItem("username");
+        localStorage.removeItem("refreshKey")
+        navigate(0);
+    }
+
     const getPost = () => {
-        GetWithAuth("/posts/"+postId)
-        .then(res => res.json())
-        .then(
-            (result) => {
-                setPost(result)
-            },
-            (error) => {
-                console.log(error)
-            }
-        )
-    
-    
+      GetWithAuth("/posts/"+postId)
+      .then((res) => {
+          if(!res.ok){
+            RefreshToken()
+            .then((res) => {if(!res.ok){
+                    logout();
+                } else {
+                    return res.json();
+                }    
+            })
+            .then((result) => {
+                if (result !== undefined){
+                    localStorage.setItem("tokenKey", result.accessToken);
+                    getPost();
+                }
+            })
+            .catch((err) => {
+                console.log(err);
+            });
+        }
+        else {
+            return res.json()
+        } 
+        })
+        .then((data) => {
+          if (data !== undefined){
+            setPost(data);
+          }
+        })
+        .catch((err) => {
+            console.log(err);
+        });   
     };
 
     const handleClose = () => {
@@ -86,7 +115,7 @@ function DialogScreen(props) {
               </Toolbar>
             </AppBar>
             <Post 
-              likes={post.postLike} 
+              initialLikes={post.postLike} 
               userId={post.userId} 
               userName={post.userName} 
               title={post.title} 
@@ -114,21 +143,53 @@ function UserActivity(props) {
   const [isOpen, setIsOpen] = useState(false)
   const [activityList, setActivityList] = useState([]);
 
+  let navigate = useNavigate();
+
+  const logout = () => {
+      localStorage.removeItem("tokenKey");
+      localStorage.removeItem("currentUser");
+      localStorage.removeItem("username");
+      localStorage.removeItem("refreshKey")
+      navigate(0);
+  }
+
   const handleNotification = (postId) =>{
     setSelectedPost(postId);
     setIsOpen(true)
   }
   const getActivity = () => {
     GetWithAuth("/users/activity/"+userId)
-      .then(res => res.json())
-      .then(
-          (result) => {
-              setActivityList(result)
-          },
-          (error) => {
-              console.log(error)
-          }
-      )  
+      .then((res) => {
+        if(!res.ok){
+          RefreshToken()
+          .then((res) => {if(!res.ok){
+                  logout();
+              } else {
+                  return res.json();
+              }    
+          })
+          .then((result) => {
+              if (result !== undefined){
+                  localStorage.setItem("tokenKey", result.accessToken);
+                  getActivity();
+              }
+          })
+          .catch((err) => {
+              console.log(err);
+          });
+      }
+      else {
+          return res.json()
+      } 
+      })
+      .then((data) => {
+        if (data !== undefined){
+          setActivityList(data);
+        }
+      })
+      .catch((err) => {
+          console.log(err);
+      }); 
   };
   useEffect(() => {
     getActivity();
