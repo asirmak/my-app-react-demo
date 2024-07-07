@@ -159,7 +159,9 @@ function Post(props) {
             "Error"
           ) : isLoaded ? (
             commentList.map(comment => (
-              <Comment userId={comment.userId} userName={comment.userName} text={comment.text} />
+              <Comment 
+              key={comment.id}
+              userId={comment.userId} userName={comment.userName} text={comment.text} />
             ))
           ) : (
             "Loading"

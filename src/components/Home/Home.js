@@ -42,7 +42,9 @@ function Home() {
                         {localStorage.getItem("currentUser") === null? "":
                         <PostForm userId = {localStorage.getItem("currentUser")} userName={localStorage.getItem("userName")} refreshPosts={setRefreshPost} />}
                         {postList.map(post => (
-                            <Post likes = {post.postLike} userId = {post.userId} userName={post.userName} 
+                            <Post
+                            key={post.id} // Add the key prop here
+                            likes = {post.postLike} userId = {post.userId} userName={post.userName} 
                             title={post.title} text={post.text} postId={post.id}></Post>
                         ))}
                     </Box>

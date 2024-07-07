@@ -1,4 +1,4 @@
-import { Button, FormControl, FormHelperText, Input, InputLabel } from "@mui/material";
+import { Button, FormControl, FormHelperText, Input, InputLabel, Box } from "@mui/material";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -18,6 +18,7 @@ function Auth() {
     const handleButton = (path) => {
         sendRequest(path);
     }
+
     const sendRequest = (path) => {
         fetch("/auth/" + path, {
             method: "POST",
@@ -44,24 +45,29 @@ function Auth() {
     }
 
     return (
-        <FormControl>
-            <InputLabel style={{ top: 10 }}>Username</InputLabel>
-            <Input
-                style={{ top: 5 }}
-                value={username}
-                onChange={handleUsername}
-            />
-            <InputLabel style={{ top: 75 }}>Password</InputLabel>
-            <Input
-                style={{ top: 25 }}
-                type="password"
-                value={password}
-                onChange={handlePassword}
-            />
+        <Box component="form" noValidate autoComplete="off" sx={{ width: '100%', maxWidth: 360, mx: 'auto', mt: 10 }}>
+            <FormControl fullWidth margin="normal">
+                <InputLabel htmlFor="username">Username</InputLabel>
+                <Input
+                    id="username"
+                    value={username}
+                    onChange={handleUsername}
+                />
+            </FormControl>
+            <FormControl fullWidth margin="normal">
+                <InputLabel htmlFor="password">Password</InputLabel>
+                <Input
+                    id="password"
+                    type="password"
+                    value={password}
+                    onChange={handlePassword}
+                />
+            </FormControl>
             <Button
+                fullWidth
                 variant="contained"
-                style={{
-                    marginTop: 60,
+                sx={{
+                    mt: 3,
                     background: 'linear-gradient(45deg, #2196F3, 30%, #21CBF3 90%)',
                     color: 'white'
                 }}
@@ -69,10 +75,12 @@ function Auth() {
             >
                 Register
             </Button>
-            <FormHelperText style={{ margin: 20 }}>Are you already registered?</FormHelperText>
+            <FormHelperText sx={{ mt: 2, textAlign: 'center' }}>Are you already registered?</FormHelperText>
             <Button
+                fullWidth
                 variant="contained"
-                style={{
+                sx={{
+                    mt: 1,
                     background: 'linear-gradient(45deg, #2196F3, 30%, #21CBF3 90%)',
                     color: 'white'
                 }}
@@ -80,7 +88,7 @@ function Auth() {
             >
                 Login
             </Button>
-        </FormControl>
+        </Box>
     );
 }
 

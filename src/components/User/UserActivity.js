@@ -41,7 +41,6 @@ function DialogScreen(props) {
         .then(res => res.json())
         .then(
             (result) => {
-                console.log(result)
                 setPost(result)
             },
             (error) => {
@@ -124,7 +123,6 @@ function UserActivity(props) {
       .then(res => res.json())
       .then(
           (result) => {
-              console.log(result)
               setActivityList(result)
           },
           (error) => {
@@ -162,11 +160,11 @@ function UserActivity(props) {
               .map((row, index) => {
                 return (
                   <TableRow hover role="checkbox" tabIndex={-1} key={index}>
-                    <Button  onClick={ () => handleNotification(row[1]) }>
                     <TableCell align="center">
+                    <Button  onClick={ () => handleNotification(row[1]) }>
                       {`${row[3]} ${row[0]} your post`}
-                    </TableCell>
                     </Button>
+                    </TableCell>
                   </TableRow>
                 );
               })}

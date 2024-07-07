@@ -4,7 +4,6 @@ import Card from '@mui/material/Card';
 import CardHeader from '@mui/material/CardHeader';
 import CardContent from '@mui/material/CardContent';
 import Avatar from '@mui/material/Avatar';
-import Typography from '@mui/material/Typography';
 import { Button, InputAdornment, OutlinedInput } from '@mui/material';
 import { useState } from 'react';
 import Snackbar from '@mui/material/Snackbar';
@@ -89,7 +88,7 @@ function PostForm(props) {
         </OutlinedInput>}
       />
       <CardContent>
-        <Typography variant="body2" color="text.secondary">
+        <div>
         <OutlinedInput
             id="outlined-adornment-amount"
             multiline
@@ -112,7 +111,7 @@ function PostForm(props) {
             }
             > 
         </OutlinedInput>
-        </Typography>
+        </div>
       </CardContent>
     </Card>
     </div>
