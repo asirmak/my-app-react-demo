@@ -1,0 +1,5 @@
+{
+    "rewrites": [
+      { "source": "/api/:path*", "destination": "https://dock-app-asirmak-dev.apps.sandbox-m3.1530.p1.openshiftapps.com/:path*" }
+    ]
+  }
