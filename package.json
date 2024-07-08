@@ -48,5 +48,6 @@
     "sass": "^1.77.6",
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11"
   },
-  "proxy": "https://dock-app-asirmak-dev.apps.sandbox-m3.1530.p1.openshiftapps.com"
+  "proxy": "https://dock-app-asirmak-dev.apps.sandbox-m3.1530.p1.openshiftapps.com",
+  "now-build": "react-scripts build && mv build dist"
 }
