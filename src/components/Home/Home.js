@@ -11,7 +11,7 @@ function Home() {
     const [refreshPost, setRefreshPost] = useState(false)
 
     const refreshPosts = () => {
-        fetch("/posts")
+        fetch("https://dock-app-asirmak-dev.apps.sandbox-m3.1530.p1.openshiftapps.com/posts")
             .then(res => res.json())
             .then(
                 (result) => {

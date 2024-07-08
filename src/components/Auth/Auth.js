@@ -20,7 +20,7 @@ function Auth() {
     }
 
     const sendRequest = (path) => {
-        fetch("/auth/" + path, {
+        fetch("https://dock-app-asirmak-dev.apps.sandbox-m3.1530.p1.openshiftapps.com/auth/" + path, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",

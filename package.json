@@ -43,7 +43,5 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
-  },
-  "proxy": "https://dock-app-asirmak-dev.apps.sandbox-m3.1530.p1.openshiftapps.com",
-  "now-build": "react-scripts build && mv build dist"
+  }
 }
