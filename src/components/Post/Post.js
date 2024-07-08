@@ -138,7 +138,7 @@ function Post(props) {
   };
 
   const refreshComments = () => {
-    fetch("/comments?postId=" + postId)
+    fetch("https://dock-app-asirmak-dev.apps.sandbox-m3.1530.p1.openshiftapps.com/comments?postId=" + postId)
       .then(res => res.json())
       .then(
         (result) => {

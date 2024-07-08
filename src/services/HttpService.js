@@ -1,5 +1,5 @@
 export const PostWithAuth = (url, body) => {
-    var request = fetch(url, {
+    var request = fetch("https://dock-app-asirmak-dev.apps.sandbox-m3.1530.p1.openshiftapps.com"+url, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -13,7 +13,7 @@ export const PostWithAuth = (url, body) => {
 
 
 export const PostWithoutAuth = (url, body) => {
-    var request = fetch(url, {
+    var request = fetch("https://dock-app-asirmak-dev.apps.sandbox-m3.1530.p1.openshiftapps.com"+url, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -25,7 +25,7 @@ export const PostWithoutAuth = (url, body) => {
 }
 
 export const PutWithAuth = (url, body) => {
-    var request = fetch(url, {
+    var request = fetch("https://dock-app-asirmak-dev.apps.sandbox-m3.1530.p1.openshiftapps.com"+url, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -38,7 +38,7 @@ export const PutWithAuth = (url, body) => {
 }
 
 export const GetWithAuth = (url) => {
-    var request = fetch(url, {
+    var request = fetch("https://dock-app-asirmak-dev.apps.sandbox-m3.1530.p1.openshiftapps.com"+url, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -51,7 +51,7 @@ export const GetWithAuth = (url) => {
 
 
 export const DeleteWithAuth = (url) => {
-    var request = fetch(url, {
+    var request = fetch("https://dock-app-asirmak-dev.apps.sandbox-m3.1530.p1.openshiftapps.com"+url, {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
@@ -64,7 +64,7 @@ export const DeleteWithAuth = (url) => {
 
 export const RefreshToken = () => {
 
-  var request = fetch("/auth/refresh", {
+  var request = fetch("https://dock-app-asirmak-dev.apps.sandbox-m3.1530.p1.openshiftapps.com/auth/refresh", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
