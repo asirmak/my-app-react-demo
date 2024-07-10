@@ -263,8 +263,8 @@ function Post(props) {
             severity='error'
             variant="filled"
             sx={{ width: '100%' }}>
-            You don't have access to delete this post!
-        </Alert>
+            Only post owner can delete!
+         </Alert>
       </Snackbar>
 
     <Card sx={{ width: 800, textAlign: "left", margin: 3 }}>
@@ -326,8 +326,9 @@ function Post(props) {
           ) : isLoaded ? (
             commentList.map(comment => (
               <Comment
-                key={comment.id}
-                userId={comment.userId} userName={comment.userName} text={comment.text} avatarId={comment.avatarId}/>
+                commentId={comment.id}
+                userId={comment.userId} userName={comment.userName} text={comment.text} 
+                avatarId={comment.avatarId} setRefresh={setRefresh} postUserId={userId}/>
             ))
           ) : (
             "Loading"

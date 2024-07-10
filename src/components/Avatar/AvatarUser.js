@@ -50,6 +50,7 @@ function AvatarUser(props) {
 
     const handleToggle = (value) => () => {
         setSelectedAvatar(value);
+        localStorage.setItem("avatarId", value);
     };
 
     const saveAvatar = () => {
