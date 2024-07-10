@@ -8,7 +8,7 @@ import Alert from '@mui/material/Alert';
 import { PostWithAuth, RefreshToken } from "../../services/HttpService";
 
 function CommentForm(props) {
-    const {userId, userName, postId, setRefresh} = props;
+    const {userId, userName, postId, setRefresh, avatarId} = props;
     const [text, setText] = useState("");
     const [isSent, setIsSent] = useState(false);
     let navigate = useNavigate();
@@ -17,7 +17,8 @@ function CommentForm(props) {
         localStorage.removeItem("tokenKey");
         localStorage.removeItem("currentUser");
         localStorage.removeItem("username");
-        localStorage.removeItem("refreshKey")
+        localStorage.removeItem("refreshKey");
+        localStorage.removeItem("avatarId");
         navigate(0)
     }
 
@@ -99,11 +100,9 @@ function CommentForm(props) {
         placeholder="Type here..."
         startAdornment = {
             <InputAdornment position = "start">
-            <Link to={{ pathname: '/users/' + userId }} style={{ color: 'white', textDecoration: 'none', boxShadow: 'none' }}>
-            <Avatar sx={{ background: 'linear-gradient(45deg, #2196F3, 30%, #21CBF3 90%)', color: 'white' }} aria-label="recipe">
-              {userName.charAt(0).toUpperCase()}
-            </Avatar>
-          </Link>
+                <Link to={{ pathname: '/users/' + userId }} style={{ color: 'white', textDecoration: 'none', boxShadow: 'none' }}>
+                    <Avatar src={`/avatars/avatar${avatarId}.png`}/>
+                </Link>
             </InputAdornment>
         }
         style={ {color: "black", backgroundColor: "white"}}

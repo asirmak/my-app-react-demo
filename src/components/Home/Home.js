@@ -40,12 +40,12 @@ function Home() {
                 <CssBaseline />
                     <Box sx={{ bgcolor: '#f0f5ff', display: "flex", flexDirection: "column", alignItems: "center"}}>
                         {localStorage.getItem("currentUser") === null? "":
-                        <PostForm userId = {localStorage.getItem("currentUser")} userName={localStorage.getItem("userName")} refreshPosts={setRefreshPost} />}
+                        <PostForm userId = {localStorage.getItem("currentUser")} refreshPosts={setRefreshPost} avatarId={localStorage.getItem("avatarId")}/>}
                         {postList.map(post => (
                             <Post
                             key={post.id} // Add the key prop here
                             initialLikes = {post.postLike} userId = {post.userId} userName={post.userName} 
-                            title={post.title} text={post.text} postId={post.id}></Post>
+                            title={post.title} text={post.text} postId={post.id} avatarId={post.avatarId}></Post>
                         ))}
                     </Box>
             </React.Fragment>

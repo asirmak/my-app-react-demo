@@ -42,6 +42,8 @@ function DialogScreen(props) {
         localStorage.removeItem("currentUser");
         localStorage.removeItem("username");
         localStorage.removeItem("refreshKey")
+        localStorage.removeItem("avatarId");
+
         navigate(0);
     }
 
@@ -121,6 +123,7 @@ function DialogScreen(props) {
               title={post.title} 
               text={post.text} 
               postId={post.id} 
+              avatarId={post.avatarId}
             />
           </Dialog>
         ) : (
@@ -150,6 +153,8 @@ function UserActivity(props) {
       localStorage.removeItem("currentUser");
       localStorage.removeItem("username");
       localStorage.removeItem("refreshKey")
+      localStorage.removeItem("avatarId");
+
       navigate(0);
   }
 

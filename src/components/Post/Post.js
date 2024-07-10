@@ -27,7 +27,7 @@ const ExpandMore = styled((props) => {
 }));
 
 function Post(props) {
-  const { initialLikes, title, text, userId, userName, postId } = props;
+  const { initialLikes, title, text, userId, userName, postId, avatarId } = props;
   const [expanded, setExpanded] = useState(false);
   const [error, setError] = useState(null);
   const [isLoaded, setIsLoaded] = useState(false);
@@ -48,6 +48,8 @@ function Post(props) {
       localStorage.removeItem("currentUser");
       localStorage.removeItem("username");
       localStorage.removeItem("refreshKey")
+      localStorage.removeItem("avatarId");
+
       navigate(0)
   }
   const addLike = () => {
@@ -187,12 +189,16 @@ function Post(props) {
       <CardHeader
         avatar={
           <Link to={{ pathname: '/users/' + userId }} style={{ color: 'white', textDecoration: 'none', boxShadow: 'none' }}>
-            <Avatar sx={{ background: 'linear-gradient(45deg, #2196F3, 30%, #21CBF3 90%)', color: 'white' }} aria-label="recipe">
-              {userName.charAt(0).toUpperCase()}
-            </Avatar>
+              <Avatar src={`/avatars/avatar${avatarId}.png`}/>
           </Link>
         }
         title={title}
+        subheader={
+          <Link to={{ pathname: '/users/' + userId }} style={{color: '#A9A9A9',  textDecoration:'none', boxShadow:'none'}} >
+            {`@${userName}`}
+          </Link>
+        }
+        
       />
       <CardContent>
         <Typography variant="body2" color="text.secondary">
@@ -232,12 +238,13 @@ function Post(props) {
             commentList.map(comment => (
               <Comment
                 key={comment.id}
-                userId={comment.userId} userName={comment.userName} text={comment.text} />
+                userId={comment.userId} userName={comment.userName} text={comment.text} avatarId={comment.avatarId}/>
             ))
           ) : (
             "Loading"
           )}
-          {disabled ? "" : <CommentForm userId={localStorage.getItem("currentUser")} userName={localStorage.getItem("userName")} postId={postId} setRefresh={setRefresh} />}
+          {disabled ? "" : <CommentForm userId={localStorage.getItem("currentUser")} userName={localStorage.getItem("userName")} postId={postId} setRefresh={setRefresh} 
+                            avatarId={localStorage.getItem("avatarId")}/>}
         </Container>
       </Collapse>
     </Card>

@@ -1,11 +1,28 @@
-import { Button, FormControl, FormHelperText, Input, InputLabel, Box } from "@mui/material";
+import { Button, FormControl, FormHelperText, Input, InputLabel, Box, Snackbar, Alert } from "@mui/material";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 function Auth() {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [isRegistered, setIsRegistered] = useState(false);
+
     let navigate = useNavigate();
+
+    const handleCloseLogin = (event, reason) => {
+        if (reason === 'clickaway') {
+          return;
+        }
+        setIsLoggedIn(false);
+    };
+
+    const handleCloseRegister = (event, reason) => {
+        if (reason === 'clickaway') {
+          return;
+        }
+        setIsRegistered(false);
+    };
 
     const handleUsername = (event) => {
         setUsername(event.target.value);
@@ -17,6 +34,8 @@ function Auth() {
 
     const handleButton = (path) => {
         sendRequest(path);
+        if(path === "login") setIsLoggedIn(true);
+        else if(path === "register") setIsRegistered(true);
     }
 
     const sendRequest = (path) => {
@@ -37,17 +56,37 @@ function Auth() {
                 localStorage.setItem("refreshKey", result.refreshToken);
                 localStorage.setItem("currentUser", result.userId);
                 localStorage.setItem("userName", username);
-                console.log(localStorage.getItem("refreshKey"))
-
+                localStorage.setItem("avatarId", result.avatarId);
             }
             setUsername(""); // Clear username state
             setPassword(""); // Clear password state
             navigate(0); // Reload the page
+
+            
         })
         .catch((err) => console.log(err));
     }
 
     return (
+        <div>
+        <Snackbar open={isLoggedIn} autoHideDuration={3000} onClose={handleCloseLogin} anchorOrigin={ {vertical : 'bottom', horizontal:'center'}}>
+            <Alert
+                onClose={handleCloseLogin}
+                severity="success"
+                variant="filled"
+                sx={{ width: '100%' }}>
+                Logged in successfully
+            </Alert>
+        </Snackbar>
+        <Snackbar open={isRegistered} autoHideDuration={3000} onClose={handleCloseRegister} anchorOrigin={ {vertical : 'bottom', horizontal:'center'}}>
+            <Alert
+                onClose={handleCloseRegister}
+                severity="success"
+                variant="filled"
+                sx={{ width: '100%' }}>
+                Registered successfully
+            </Alert>
+        </Snackbar> 
         <Box component="form" noValidate autoComplete="off" sx={{ width: '100%', maxWidth: 360, mx: 'auto', mt: 10 }}>
             <FormControl fullWidth margin="normal">
                 <InputLabel htmlFor="username">Username</InputLabel>
@@ -92,6 +131,7 @@ function Auth() {
                 Login
             </Button>
         </Box>
+        </div>
     );
 }
 

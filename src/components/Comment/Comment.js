@@ -5,24 +5,22 @@ import Avatar from '@mui/material/Avatar';
 
 
 function Comment(props) {
-    const {text, userId, userName} = props;
+    const {text, userId, userName, avatarId} = props;
     
     return(
-        <CardContent sx={ {display: "fles", flexWrap: "wrap", justifyContent : "flex-start", alignItems : "center"} }>
+        <CardContent sx={ {display: "flex", flexWrap: "wrap", justifyContent : "flex-start", alignItems : "center"} }>
         <OutlinedInput
         disabled
         id="outlined-adornment-amount"
         multiline
         inputProps={{maxLength : 25}}
         fullWidth
-        value={text}
+        value={`${userName}: ${text}`}
         startAdornment = {
             <InputAdornment position = "start">
-            <Link to={{ pathname: '/users/' + userId }} style={{ color: 'white', textDecoration: 'none', boxShadow: 'none' }}>
-            <Avatar sx={{ background: 'linear-gradient(45deg, #2196F3, 30%, #21CBF3 90%)', color: 'white' }} aria-label="recipe">
-              {userName.charAt(0).toUpperCase()}
-            </Avatar>
-          </Link>
+              <Link to={{ pathname: '/users/' + userId }} style={{ color: 'white', textDecoration: 'none', boxShadow: 'none' }}>
+                <Avatar src={`/avatars/avatar${avatarId}.png`}/>
+              </Link>
             </InputAdornment>
         }
         style={ {color: "black", backgroundColor: "white"}}
