@@ -45,7 +45,9 @@ function Home() {
                             <Post
                             key={post.id} // Add the key prop here
                             initialLikes = {post.postLike} userId = {post.userId} userName={post.userName} 
-                            title={post.title} text={post.text} postId={post.id} avatarId={post.avatarId}></Post>
+                            title={post.title} text={post.text} postId={post.id} avatarId={post.avatarId}
+                            refreshPosts={setRefreshPost}>
+                            </Post>
                         ))}
                     </Box>
             </React.Fragment>

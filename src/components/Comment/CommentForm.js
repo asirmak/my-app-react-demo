@@ -8,7 +8,7 @@ import Alert from '@mui/material/Alert';
 import { PostWithAuth, RefreshToken } from "../../services/HttpService";
 
 function CommentForm(props) {
-    const {userId, userName, postId, setRefresh, avatarId} = props;
+    const {userId, postId, setRefresh, avatarId} = props;
     const [text, setText] = useState("");
     const [isSent, setIsSent] = useState(false);
     let navigate = useNavigate();

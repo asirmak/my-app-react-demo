@@ -11,10 +11,11 @@ import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import CommentIcon from '@mui/icons-material/Comment';
-import { Container } from '@mui/material';
+import { Alert, Container, Snackbar } from '@mui/material';
 import Comment from '../Comment/Comment';
 import CommentForm from '../Comment/CommentForm';
 import { DeleteWithAuth, PostWithAuth, RefreshToken } from '../../services/HttpService';
+import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 
 const ExpandMore = styled((props) => {
   const { expand, ...other } = props;
@@ -27,7 +28,7 @@ const ExpandMore = styled((props) => {
 }));
 
 function Post(props) {
-  const { initialLikes, title, text, userId, userName, postId, avatarId } = props;
+  const { initialLikes, title, text, userId, userName, postId, avatarId, refreshPosts} = props;
   const [expanded, setExpanded] = useState(false);
   const [error, setError] = useState(null);
   const [isLoaded, setIsLoaded] = useState(false);
@@ -38,6 +39,8 @@ function Post(props) {
   const [likeId, setLikeId] = useState(null);
   const [refresh, setRefresh] = useState(false);
   const [isInitialMount, setIsInitialMount] = useState(true);
+  const [isDeletionSuccessfull, SetIsDeletionSuccessfull] = useState(false);
+  const [isDeletionFailed, SetIsDeletionFailed] = useState(false);
 
   let disabled = (localStorage.getItem("currentUser") == null ? true : false);
 
@@ -49,9 +52,9 @@ function Post(props) {
       localStorage.removeItem("username");
       localStorage.removeItem("refreshKey")
       localStorage.removeItem("avatarId");
-
       navigate(0)
   }
+
   const addLike = () => {
     const newLike = { userId: localStorage.getItem("currentUser"), postId: postId };
     PostWithAuth("/likes", newLike)
@@ -171,6 +174,51 @@ function Post(props) {
     }
   };
 
+  const handlePostDelete = () => {
+    if(userId === +(localStorage.getItem("currentUser"))){
+      deletePost();
+      refreshPosts(true);
+      SetIsDeletionSuccessfull(true);
+    }
+    else{
+      SetIsDeletionFailed(true);
+    }
+  }
+
+  const deletePost = () => {
+    DeleteWithAuth("/posts/" + postId)
+    .then((res) => {
+      if (!res.ok){
+        RefreshToken()
+        .then((res) => {
+          if(!res.ok){
+            logout();
+          }
+          else{
+            return res.json();
+          }
+        })
+        .then((result) => {
+          if (result !== undefined){
+            localStorage.setItem("tokenKey", result.accessToken);
+            deletePost();
+            refreshPosts(true);
+          }
+        })
+        .catch((err) => {
+          if (err.message !== "Unauthorized") {
+            console.log(err);
+          }
+        });
+      }
+    })
+    .catch((err) => {
+      if (err.message !== "Unauthorized") {
+        console.log(err);
+      }
+    });
+  };
+
   useEffect(() => {
     if (isInitialMount)
       setIsInitialMount(false)
@@ -184,7 +232,41 @@ function Post(props) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const handleCloseDeletionSuccess = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+    SetIsDeletionSuccessfull(false);
+  };
+
+  const handleCloseDeletionFailed = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+    SetIsDeletionFailed(false);
+  };
+  
   return (
+    <div>
+      <Snackbar open={isDeletionSuccessfull} autoHideDuration={3000} onClose={handleCloseDeletionSuccess} anchorOrigin={ {vertical : 'bottom', horizontal:'center'}}>
+        <Alert
+            onClose={handleCloseDeletionSuccess}
+            severity="success"
+            variant="filled"
+            sx={{ width: '100%' }}>
+            Post deleted successfully.
+        </Alert>
+      </Snackbar>
+      <Snackbar open={isDeletionFailed} autoHideDuration={3000} onClose={handleCloseDeletionFailed} anchorOrigin={ {vertical : 'bottom', horizontal:'center'}}>
+        <Alert
+            onClose={handleCloseDeletionFailed}
+            severity='error'
+            variant="filled"
+            sx={{ width: '100%' }}>
+            You don't have access to delete this post!
+        </Alert>
+      </Snackbar>
+
     <Card sx={{ width: 800, textAlign: "left", margin: 3 }}>
       <CardHeader
         avatar={
@@ -198,13 +280,19 @@ function Post(props) {
             {`@${userName}`}
           </Link>
         }
-        
+        action={
+          <IconButton size="big" 
+          onClick={() => handlePostDelete()}>
+            <DeleteForeverIcon/>
+          </IconButton>
+        }
       />
       <CardContent>
         <Typography variant="body2" color="text.secondary">
           {text}
         </Typography>
       </CardContent>
+      
       <CardActions disableSpacing>
         {disabled ?
           <IconButton
@@ -213,7 +301,8 @@ function Post(props) {
             aria-label="add to favorites"
           >
             <FavoriteIcon style={isLiked ? { color: 'red' } : null} />
-          </IconButton> :
+          </IconButton> 
+          :
           <IconButton
             onClick={handleLike}
             aria-label="add to favorites"
@@ -243,11 +332,12 @@ function Post(props) {
           ) : (
             "Loading"
           )}
-          {disabled ? "" : <CommentForm userId={localStorage.getItem("currentUser")} userName={localStorage.getItem("userName")} postId={postId} setRefresh={setRefresh} 
+          {disabled ? "" : <CommentForm userId={localStorage.getItem("currentUser")} postId={postId} setRefresh={setRefresh} 
                             avatarId={localStorage.getItem("avatarId")}/>}
         </Container>
       </Collapse>
     </Card>
+    </div>
   );
 }
 
