@@ -23,7 +23,7 @@ function Comment(props) {
     }
 
     const deleteComment = () => {
-      DeleteWithAuth("/comments/" + commentId)
+      return DeleteWithAuth("/comments/" + commentId)
       .then((res) => {
         if (!res.ok){
           RefreshToken()
@@ -59,9 +59,11 @@ function Comment(props) {
 
     const handleCommentDelete = () => {
       if(userId === +(localStorage.getItem("currentUser")) || postUserId === +(localStorage.getItem("currentUser"))){
-        deleteComment();
-        setRefresh(true);
-        SetIsDeletionSuccessfull(true);
+        deleteComment().then(() => {
+          setRefresh(true);
+          SetIsDeletionSuccessfull(true);
+        })
+
       }
       else{
         SetIsDeletionFailed(true);

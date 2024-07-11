@@ -178,9 +178,10 @@ function Post(props) {
 
   const handlePostDelete = () => {
     if(userId === +(localStorage.getItem("currentUser"))){
-      deletePost();
-      refreshPosts(true);
-      SetIsDeletionSuccessfull(true);
+      deletePost().then( () => {
+        refreshPosts(true);
+        SetIsDeletionSuccessfull(true);
+      })
     }
     else{
       SetIsDeletionFailed(true);
@@ -188,7 +189,7 @@ function Post(props) {
   }
 
   const deletePost = () => {
-    DeleteWithAuth("/posts/" + postId)
+    return DeleteWithAuth("/posts/" + postId)
     .then((res) => {
       if (!res.ok){
         RefreshToken()

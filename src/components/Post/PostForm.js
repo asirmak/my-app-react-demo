@@ -36,7 +36,7 @@ function PostForm(props) {
   };
 
   const savePost = () => {
-    PostWithAuth("/posts", {
+    return PostWithAuth("/posts", {
       title: title,
       userId: localStorage.getItem("currentUser"),
       text: text,
@@ -72,11 +72,12 @@ function PostForm(props) {
 
   const handleSubmit = () => {
     if(text !== "" && title !== ""){
-      savePost();
-      setIsSent(true);
-      setTitle("");
-      setText("");
-      refreshPosts(true);
+      savePost().then( () => {
+        setIsSent(true);
+        setTitle("");
+        setText("");
+        refreshPosts(true);
+      })
     }
   }
 

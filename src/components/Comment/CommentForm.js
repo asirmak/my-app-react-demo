@@ -30,7 +30,7 @@ function CommentForm(props) {
       };
 
     const saveComment = () => {
-        PostWithAuth("/comments", {
+        return PostWithAuth("/comments", {
             userId: localStorage.getItem("currentUser"),
             postId: postId,
             text: text,
@@ -66,10 +66,11 @@ function CommentForm(props) {
 
     const handleSubmit = () => {
         if (text !== ""){
-            saveComment();
-            setIsSent(true);
-            setText("");
-            setRefresh(true);
+            saveComment().then(() => {
+                setIsSent(true);
+                setText("");
+                setRefresh(true);
+            });
         }
     }
 

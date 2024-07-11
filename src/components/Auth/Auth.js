@@ -33,15 +33,16 @@ function Auth() {
     }
 
     const handleButton = (path) => {
-        sendRequest(path);
-        if(path === "login") setIsLoggedIn(true);
-        else if(path === "register") setIsRegistered(true);
+        sendRequest(path).then( () => {
+            if(path === "login") setIsLoggedIn(true);
+            else if(path === "register") setIsRegistered(true);
+        })
     }
 
     const sendRequest = (path) => {
         const baseUrl = process.env.REACT_APP_BASE_URL;
 
-        fetch(baseUrl+"/auth/" + path, {
+        return (fetch(baseUrl+"/auth/" + path, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -66,7 +67,7 @@ function Auth() {
 
             
         })
-        .catch((err) => console.log(err));
+        .catch((err) => console.log(err)));
     }
 
     return (
