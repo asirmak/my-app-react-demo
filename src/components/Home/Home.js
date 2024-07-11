@@ -32,9 +32,15 @@ function Home() {
     }, [refreshPost]);
 
     if (error) {
-        return <div>Error !!!</div>;
+        return (
+        <div>
+            <p>Under Maintenance</p>
+            <span>You can email me </span>
+            <a href="mailto:asirmak@outlook.com">asirmak@outlook.com</a>
+            
+        </div>);
     } else if (!isLoaded) {
-        return <div>Loading...</div>;
+        return <div>Loading... (It may take time (30 seconds))</div>;
     } else {
         return (
             <React.Fragment >
