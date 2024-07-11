@@ -39,7 +39,9 @@ function Auth() {
     }
 
     const sendRequest = (path) => {
-        fetch("/auth/" + path, {
+        const baseUrl = process.env.REACT_APP_BASE_URL;
+
+        fetch(baseUrl+"/auth/" + path, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",

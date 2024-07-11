@@ -11,7 +11,8 @@ function Home() {
     const [refreshPost, setRefreshPost] = useState(false)
 
     const refreshPosts = () => {
-        fetch("/posts")
+        const baseUrl = process.env.REACT_APP_BASE_URL;
+        fetch(baseUrl+"/posts")
             .then(res => res.json())
             .then(
                 (result) => {

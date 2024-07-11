@@ -68,7 +68,6 @@ function AvatarUser(props) {
                     }    
                 })
                 .then((result) => {
-                    console.log(result)
                     if (result !== undefined){
                         localStorage.setItem("tokenKey", result.accessToken);
                         saveAvatar();
