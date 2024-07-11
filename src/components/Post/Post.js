@@ -143,7 +143,9 @@ function Post(props) {
   };
 
   const refreshComments = () => {
-    fetch("/comments?postId=" + postId)
+    const baseUrl = process.env.REACT_APP_BASE_URL;
+
+    fetch(baseUrl+"/comments?postId=" + postId)
       .then(res => res.json())
       .then(
         (result) => {
@@ -280,11 +282,12 @@ function Post(props) {
             {`@${userName}`}
           </Link>
         }
-        action={
-          <IconButton size="big" 
+        action={refreshPosts !== undefined ?
+          (<IconButton size="big" 
           onClick={() => handlePostDelete()}>
             <DeleteForeverIcon/>
-          </IconButton>
+          </IconButton>) 
+          : ""
         }
       />
       <CardContent>
