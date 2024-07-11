@@ -11,7 +11,7 @@ import Alert from '@mui/material/Alert';
 import { PostWithAuth, RefreshToken } from '../../services/HttpService';
 
 function PostForm(props) {
-  const {userId, userName, refreshPosts} = props;
+  const {userId, refreshPosts, avatarId} = props;
   const [text, setText] = useState("");
   const [title, setTitle] = useState("");
   const [isSent, setIsSent] = useState(false);
@@ -22,7 +22,9 @@ function PostForm(props) {
       localStorage.removeItem("tokenKey");
       localStorage.removeItem("currentUser");
       localStorage.removeItem("username");
-      localStorage.removeItem("refreshKey")
+      localStorage.removeItem("refreshKey");
+      localStorage.removeItem("avatarId");
+
       navigate(0)
   }
 
@@ -103,11 +105,8 @@ function PostForm(props) {
     <Card sx={{ width: 800, textAlign:"left", margin: 3}} className="postContainer">
       <CardHeader
         avatar={
-          <Link to={{ pathname: '/users/' + userId }} style={{ color: 'white', textDecoration: 'none', boxShadow: 'none' }}>
-          <Avatar sx={{ background: 'linear-gradient(45deg, #2196F3, 30%, #21CBF3 90%)',
-                    color: 'white' }} aria-label="recipe">
-            {userName.charAt(0).toUpperCase()}            
-          </Avatar>
+          <Link to={{ pathname: '/users/' + userId }} style={{ color: 'white', textDecoration: 'none', boxShadow: 'none' }}>       
+            <Avatar src={`/avatars/avatar${avatarId}.png`}/>
           </Link>
         }
         title={<OutlinedInput

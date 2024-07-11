@@ -19,6 +19,8 @@ function User() {
         localStorage.removeItem("currentUser");
         localStorage.removeItem("username");
         localStorage.removeItem("refreshKey")
+        localStorage.removeItem("avatarId");
+
         navigate(0);
     }
     
